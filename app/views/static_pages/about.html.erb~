@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Ruby on Rails Tutorial Sample App | About</title>
+	</head>
+	<body>
+		<h1>About Us</h1>
+		<p>
+  		Another long diatribe trying to send you to the rails tuturial website!
+		</p>
+	</body>
+</html>
