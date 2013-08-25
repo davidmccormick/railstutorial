@@ -48,11 +48,23 @@ describe "User Pages" do
 					visit users_path
 				end
 				
-				it { should have_link('delete', href: user_path(:admin)) }
-				it "should be able to delegate another user" do
-					expect { click_link('delete') }.to change(User.count).by(-1)
+				it { should have_link('delete', href: user_path(User.first)) }
+				it "should be able to delete another user" do
+					expect { click_link('delete') }.to change(User, :count).by(-1)
 				end
 				it { should_not have_link('delete', href: user_path(:admin)) }
+			end
+			
+			describe "as a non admin user" do
+				let(:user) { FactoryGirl.create(:user) }
+				let(:non_admin) { FactoryGirl.create(:user) }
+
+				before { sign_in non_admin}
+			
+				describe "submitting a DELETE request to the Users#destroy action" do
+					before { delete user_path(user) }
+					specify { response.should redirect_to(root_path) }
+				end
 			end
 		end
 	end
