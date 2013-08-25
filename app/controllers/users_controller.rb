@@ -8,11 +8,11 @@ class UsersController < ApplicationController
 	end
 
   def show
-  	@user = User.find(params[:id])
+		@user = User.find(params[:id])
   end
   
   def new
-  	@user = User.new
+  		@user = User.new
   end
   
   def create
@@ -27,9 +27,15 @@ class UsersController < ApplicationController
   end
   
   def destroy
-  		User.find(params[:id]).destroy
-  		flash[:success] = "User Destroyed"
-  		redirect_to users_path
+  		user = User.find(params[:id])
+  		if ( user != current_user )
+  			user.destroy
+  			flash[:success] = "User Destroyed"
+  			redirect_to users_path
+  		else
+  			flash[:error] = "You shouldn't try to destory yourself!"
+  			redirect_to root_path
+  		end
   	end
   
   def edit
