@@ -34,4 +34,8 @@ SampleApp::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
+  
+# Since the schema.rb does not hold any SQL specific information, like charsets or collations, your test database may differ from your development database in such aspects (because they will be defined by the database defaults when tables are created without further information).
+# This will make a db/development_structure.sql appear which is then also read and loaded when you do a db:test:prepare.
+# config.active_record.schema_format = :sql
 end
