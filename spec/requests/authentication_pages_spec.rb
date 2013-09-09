@@ -1,33 +1,37 @@
 require 'spec_helper'
 
 describe "Authentication" do
-
-	subject { page }
-	
-	describe "signin page" do
+	subject { page}
+	describe "#signin page" do
 		before { visit signin_path }
 		
-		it { should have_selector('h1', text: "Sign in") }
-		it { should have_selector('title', text: "Sign in") }
+		it "has css \"title\" with text \"Sign in\"" do
+			expect(page).to have_selector('h1', text: "Sign in")
+			expect(page).to have_selector('title', text: "Sign in")
+		end
 	end
 	
-	describe "signin" do
+	describe "when signing in" do
 		before { visit signin_path }
 		
-		describe "with invalid credentials" do
+		context "with invalid credentials" do
 			before { click_button "Sign in" }
 		
-			it { should have_selector('title', text: 'Sign in') }
-			it { should have_selector('div.alert.alert-error', text: 'Invalid') }
+			it "we get redirected and an error flash" do
+				expect(page).to have_selector('title', text: 'Sign in')
+				expect(page).to have_selector('div.alert.alert-error', text: 'Invalid')
+			end
 			
-			describe "after visiting another page" do
+			describe "then visiting another page" do
 				before { click_link 'Home' }
 				
-				it { should_not have_selector('div.alert.alert-error') }
+				it "doesn't have an error flash" do
+					expect(page).to_not have_selector('div.alert.alert-error')
+				end
 			end
 		end
 		
-		describe "with valid information" do
+		context "with valid credentials" do
 			let(:user) { FactoryGirl.create(:user) }
 			before do
 				fill_in "Email", with: user.email
@@ -35,48 +39,57 @@ describe "Authentication" do
 				click_button "Sign in"
 			end
 			
-			it { should have_selector('title', text: user.name) }
-			it { should have_link('Profile', href: user_path(user)) }
-			it { should have_link('Settings', href: edit_user_path(user)) }
-			it { should have_link('Sign out', href: signout_path) }
-			it { should_not have_link('Sign in', href: signin_path) }
+			it "has right content and links" do
+				expect(page).to have_selector('title', text: user.name)
+				expect(page).to have_link('Profile', href: user_path(user))
+				expect(page).to have_link('Settings', href: edit_user_path(user))
+				expect(page).to have_link('Sign out', href: signout_path)
+				expect(page).to_not have_link('Sign in', href: signin_path)
+			end
 	
-			describe "followed by sign out" do
+			describe "then if we sign out" do
 				before { click_link ('Sign out') }
 				
-				it { should have_link('Sign in') }
-				it { should_not have_link('Profile') }
-				it { should_not have_link('Settings') }
-				it { should_not have_link('Sign out') }
+				it "has the right links" do
+					expect(page).to have_link('Sign in')
+					expect(page).to_not have_link('Profile')
+					expect(page).to_not have_link('Settings')
+					expect(page).to_not have_link('Sign out')
+				end
 			end
 		end
 	end
 	
 	describe "Authorization" do
-		describe "for non-signed in users" do
+		context "with non-signed in users" do
 			let(:user) { FactoryGirl.create(:user) }
 			
 			describe "In the users controller" do
-				describe "visiting the edit page" do
+				describe "when visiting the edit page" do
 					before { visit edit_user_path(user) }
-					it { should have_selector('title', text: "Sign in") }
+					it "is the Sign In page" do
+						expect(page).to have_selector('title', text: "Sign in")
+					end
 				end
 				
-				describe "submitting the update action" do
+				describe "when submitting the update action" do
 					before { put user_path(user) }
-					specify { response.should redirect_to(signin_path) }
+					it "redirects you to the Sign In page" do
+						 expect(response).to redirect_to(signin_path)
+					end
 				end
 				
-				describe "visiting the user index" do
+				describe "when visiting the user index" do
 					before { visit users_path }
 					
-					it { should have_selector('title', text: 'Sign in') }
+					it "it is the Sign in page" do
+						expect(page).to have_selector('title', text: 'Sign in')
+					end
 				end
-				
 			end
 		end
 		
-		describe "as wrong user" do
+		context "as wrong user" do
 			let(:user) { FactoryGirl.create(:user) }
 			let(:wrong_user) { FactoryGirl.create(:user, email: "wrong@example.com") }
 			
@@ -84,12 +97,14 @@ describe "Authentication" do
 			
 			describe "visiting Users#edit page" do
 				before { visit edit_user_path(wrong_user) }
-				it { should_not have_selector('title', text: full_title('Edit user')) }
+				it "is not the edit page" do
+					expect(page).to_not have_selector('title', text: full_title('Edit user'))
+				end
 			end
 			
 			describe "submitting a put request to the users#update action" do
 				before { put user_path(wrong_user) }
-				specify { response.should redirect_to(root_path) }
+				specify { expect(response).to redirect_to(root_path) }
 			end
 		end
 		
@@ -105,7 +120,26 @@ describe "Authentication" do
 			describe "after signing in" do
 				
 				it "should render the desired protected page" do
-					page.should have_selector('title', text: 'Edit user')
+					expect(page).to have_selector('title', text: 'Edit user')
+				end
+			end
+		end
+			
+		describe "microposts controller" do
+			context "when not signed in" do
+				describe "posting to create" do
+					before {  post microposts_path }
+					specify { expect(response).to redirect_to(signin_path) }
+				end
+				
+				describe "deleting to destroy" do
+					before { 
+						micropost = FactoryGirl.create(:micropost)
+						delete micropost_path(micropost)
+					}
+					
+					it { expect(response).to redirect_to(signin_path) }
+
 				end
 			end
 		end

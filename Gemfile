@@ -18,7 +18,8 @@ group :development do
 end
 
 group :test do
-	gem 'rspec-rails', '2.9.0'
+	#gem 'rspec-rails', '2.9.0'
+	gem 'rspec-rails'
 	gem 'guard-rspec', '0.5.5'
 	gem 'capybara', '1.1.2'
 	gem 'rb-inotify', '0.9.0'
