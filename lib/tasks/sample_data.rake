@@ -1,18 +1,25 @@
 namespace :db do
   desc "Fill the database with sample data"
   task populate: :environment do
-  	 puts "Creating user: Example User [example@railstutorial.org]"
-    User.create(name: "Example User",
+  		make_users
+  		make_microposts
+  		make_relationships
+  end
+end
+  
+def make_users
+	puts "Creating user: Example User [example@railstutorial.org]"
+	User.create(name: "Example User",
                           email: "example@railstutorial.org",
                           password: "foobar",
                           password_confirmation: "foobar",
-                        )
+    )
     puts "Creating user: Dave McCormick [a@b.com]"
     me = User.create(name: "Dave McCormick",
                           email: "a@b.com",
                           password: "123456",
                           password_confirmation: "123456",
-                        )
+    )
     me.toggle!(:admin)
     99.times do |n|
       name = Faker::Name.name
@@ -21,6 +28,9 @@ namespace :db do
       puts "Creating user: #{name} [#{email}]"
       User.create!(name: name, email: email, password: password, password_confirmation: password)
     end
+end
+
+def make_microposts
     # create some fake microposts
     users = User.all(limit: 6)
     #turn off created_at timestamps...
@@ -37,5 +47,21 @@ namespace :db do
     			posted = posted - rand(86400).seconds
     		end
     }
-  end
+end
+
+def make_relationships
+	users = User.all
+	user = users.first
+	followed_users = users[2..50]
+	followers =users[3..20]
+	
+	puts "Creating relationships for user: #{user.name}"
+	followed_users.each {|f| 
+		puts "Following: #{f.name}"
+		user.follow!(f)
+	}
+	followers.each { |f| 
+		puts "Followed by: #{f.name}"
+		f.follow!(user)
+	}
 end

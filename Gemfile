@@ -12,7 +12,7 @@ gem 'bootstrap-will_paginate', '0.0.6'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 group :development do
-	gem 'annotate', '~> 2.4.1.beta'
+	gem 'annotate'
 	gem 'better_errors'
 	gem 'binding_of_caller'
 end
