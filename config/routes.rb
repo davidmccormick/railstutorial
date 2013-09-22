@@ -1,5 +1,9 @@
 SampleApp::Application.routes.draw do
 
+  get "relationships/create"
+
+  get "relationships/destroy"
+
   match '/help', to: 'static_pages#help'
   match '/about', to: 'static_pages#about'
   match '/contact', to: 'static_pages#contact'
