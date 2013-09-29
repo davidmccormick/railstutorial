@@ -108,7 +108,7 @@ describe "Authentication" do
 					end
 					
 					describe "submitting the destroy action" do
-						before { delete relationships_path(1) }
+						before { delete relationship_path(1) }
 						specify { response.should redirect_to(signin_path) }
 					end
 				end

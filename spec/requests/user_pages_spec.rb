@@ -174,7 +174,7 @@ describe "User Pages" do
   			end
   			
   	  		it "should decrement the other users followers count" do
-  				expect { click_button "Unfollow" }.to change(other_user.followeds, :count).by(-1)
+  				expect { click_button "Unfollow" }.to change(other_user.followers, :count).by(-1)
   			end
   			
   			describe "toggling the follow button" do
